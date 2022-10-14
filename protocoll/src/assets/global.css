@@ -1,3 +1,8 @@
+body {
+  width: 75%;
+  margin: auto;
+}
+
 .input_area {
   max-width: 600px;
   padding: 5em;
@@ -33,4 +38,18 @@
 .input_text_attendee {
   display: flex;
   flex-direction: column;
+}
+
+.add_questions,
+.question_content {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.add_question_content_value {
+  width: 100%;
+  height: 10em;
+  resize: none;
 }

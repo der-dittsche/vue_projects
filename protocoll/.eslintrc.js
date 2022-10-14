@@ -6,6 +6,7 @@ module.exports = {
   extends: [
     "plugin:vue/vue3-essential",
     "eslint:recommended",
+    "plugin:vue/recommended",
     "plugin:prettier/recommended",
   ],
   parserOptions: {
@@ -21,5 +22,6 @@ module.exports = {
         endOfLine: "auto",
       },
     ],
+    "vue/no-multiple-template-root": "off",
   },
 };
