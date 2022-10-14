@@ -3,6 +3,7 @@ import HomeView from "@/views/HomeView.vue";
 import about from "@/views/AboutView.vue";
 import AttendeesList from "@/views/AttendeesList.vue";
 import HttpRequest from "@/views/HttpRequest.vue";
+import AttendeesView from "@/views/AttendeesView.vue";
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: "/HttpRequest",
     name: "HttpRequest",
     component: HttpRequest,
+  },
+  {
+    path: "/AttendeesView",
+    name: "AttendeesView",
+    component: AttendeesView,
   },
 ];
 

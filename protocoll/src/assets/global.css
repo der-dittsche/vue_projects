@@ -29,3 +29,8 @@
   color: white;
   text-decoration: line-through;
 }
+
+.input_text_attendee {
+  display: flex;
+  flex-direction: column;
+}
