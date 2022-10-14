@@ -1,118 +1,92 @@
-<!-- eslint-disable no-undef -->
 <template>
-  <div class="attendees">
-    <h1>Hallo Welt!</h1>
-    <form @submit.prevent="addAttendee">
-      <p class="input_text_attendee">
-        <input
-          v-model="newAttendeeContent"
-          class="input_text_attendee"
-          type="text"
-          placeholder="surname"
-        />
-        <input
-          v-model="newAttendeeContent"
-          class="input_text_attendee"
-          type="text"
-          placeholder="lastname"
-        />
-        <input
-          v-model="newAttendeeContent"
-          class="input_text_attendee"
-          type="text"
-          placeholder="githubAccount"
-        />
-        <input
-          v-model="newAttendeeContent"
-          class="input_text_attendee"
-          type="text"
-          placeholder="email"
-        />
-        <input
-          v-model="newAttendeeContent"
-          class="input_text_attendee"
-          type="text"
-          placeholder="class"
-        />
-      </p>
-      <p class="input_button_attendee">
-        <button :disable="!newAttendeeContent" class="input_button_text">
-          Submit
-        </button>
-      </p>
-    </form>
-    <div v-for="attendee in attendees" :key="attendee.id" class="card">
-      <div class="card_content_text">
-        <ul>
-          <li>{{ attendee.surname }}</li>
-          <li>{{ attendee.lastname }}</li>
-          <li>{{ attendee.email }}</li>
-          <li>{{ attendee.githubAccount }}</li>
-          <li>{{ attendee.classes }}</li>
-        </ul>
+  <div class="task">
+    <h2>New Questions</h2>
+    <div class="add_questions">
+      <div class="add_question_content">
+        <textarea
+          ref="newQuestionRef"
+          v-model="newQuestion"
+          class="add_question_content_value"
+          placeholder="ask your Question"
+        ></textarea>
+      </div>
+      <div class="add_question_buttons">
+        <button :disabled="!newQuestion" @click="addQuestion">submit</button>
       </div>
     </div>
+    <QuestionContent
+      v-for="note of notes"
+      :key="note.id"
+      :note="note"
+      @delete-clicked="deleteQuestion"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import QuestionContent from "@/components/QuestionContent.vue";
 import {
   collection,
   onSnapshot,
+  doc,
   addDoc,
-  query,
-  orderBy,
+  updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 
-/* firebase reference */
+const notes = ref([]);
 
-const attendeesCollectionRef = collection(db, "protocoll-app");
-const attendeesCollectionQuerry = query(
-  attendeesCollectionRef,
-  orderBy("class", "desc")
-);
+const questionCollectionQuerry = collection(db, "task-app");
 
-/* get Array of Attendees from firebase */
+const newQuestion = ref("");
+const newQuestionRef = ref(null);
+
+const answer = ref("");
+const answerRef = ref(null);
+
+const addQuestion = () => {
+  addDoc(questionCollectionQuerry, {
+    id: "",
+    question: newQuestion.value,
+    answer: "",
+    date: "",
+  });
+
+  newQuestion.value = "";
+
+  newQuestionRef.value.focus();
+};
+
+const deleteQuestion = (idToDelete) => {
+  deleteDoc(doc(questionCollectionQuerry, idToDelete));
+};
+
+const saveAnswer = (id, answer) => {
+  updateDoc(doc(questionCollectionQuerry, id), {
+    answer: answer.value,
+  });
+  answer.value = "";
+
+  answerRef.value.focus();
+};
+
+const undoAnswer = () => {};
 
 onMounted(() => {
-  onSnapshot(attendeesCollectionQuerry, (querySnapshot) => {
-    const fbAttendees = [];
+  onSnapshot(questionCollectionQuerry, (querySnapshot) => {
+    const fbQuestions = [];
     querySnapshot.forEach((doc) => {
-      const attendees = {
+      const questionEntrys = {
         id: doc.id,
-        surname: doc.data().surname,
-        lastname: doc.data().lastname,
-        email: doc.data().email,
-        githubAccount: doc.data().githubAccount,
-        classes: doc.data().classes,
-        fulltime: doc.data().fulltime,
+        question: doc.data().question,
+        answer: doc.data().answer,
+        date: doc.data().date,
       };
-      fbAttendees.push(attendees);
+      fbQuestions.push(questionEntrys);
     });
-    attendees.value = fbAttendees;
+    notes.value = fbQuestions;
   });
 });
-
-/* Array of Attendees */
-
-const attendees = ref[{}];
-
-/* add new Attendee by click submit button or press enter */
-
-const newAttendeeContent = ref("");
-
-const addAttendee = () => {
-  addDoc(attendeesCollectionRef, {
-    firstname: newAttendeeContent.value,
-    laststname: newAttendeeContent.value,
-    email: newAttendeeContent.value,
-    githubAccount: newAttendeeContent.value,
-    classes: newAttendeeContent.value,
-    fulltime: true,
-    date: Date.now(),
-  });
-  newAttendeeContent.value = "";
-};
 </script>
