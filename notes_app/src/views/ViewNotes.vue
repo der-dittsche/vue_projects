@@ -1,27 +1,30 @@
 <template>
   <div class="notes">
-    <div class="card mb-4 p-4 has-background-success-dark">
-      <div class="field">
-        <div class="control">
-          <textarea
-            v-model="newNote"
-            class="textarea"
-            placeholder="Add Notes"
-            ref="newNoteRef"
-          />
-        </div>
-      </div>
-    </div>
-    <Note v-for="note in notes" :key="note.id" :note="note" />
+    <AddEditNote v-model="newNote" ref="addEditNote">
+      <template #buttons>
+        <button
+          @click="addNote"
+          :disabled="!newNote"
+          class="button is-link has-background-success"
+        >
+          Add New Note
+        </button></template
+      >
+    </AddEditNote>
+    <Note v-for="note in storeNotes.notes" :key="note.id" :note="note" />
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import Note from "@/components/Notes/Notes.vue";
+import AddEditNote from "@/components/Layout/AddEditNote.vue";
+import { useStoreNotes } from "@/store/storeNotes";
 
 const newNote = ref("");
-const newNoteRef = ref(null);
+
+const storeNotes = useStoreNotes();
+const addEditNoteRef = ref(null);
 
 const notes = ref([
   {
@@ -36,17 +39,9 @@ const notes = ref([
 ]);
 
 const addNote = () => {
-  let currentDate = new Date().getTime(),
-    id = currentDate.toString();
-
-  let note = {
-    id,
-    content: newNote.value,
-  };
-
-  notes.value.unshift(note);
+  storeNotes.addNote(newNote.value);
 
   newNote.value = "";
-  newNoteRef.value.focus();
+  addEditNoteRef.value.focusTextarea();
 };
 </script>
